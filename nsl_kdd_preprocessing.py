@@ -1,6 +1,6 @@
 """
 Campus Network Intrusion Detection System - NSL-KDD Dataset Preprocessing
-Author: Final Year Academic Project
+Author: Shreya Narayanan
 Date: December 2025
 
 This script preprocesses the NSL-KDD dataset for intrusion detection analysis.
