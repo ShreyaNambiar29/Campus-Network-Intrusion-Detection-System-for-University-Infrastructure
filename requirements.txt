@@ -7,6 +7,10 @@ numpy>=1.21.0
 
 # Machine Learning Libraries
 scikit-learn>=1.1.0
+xgboost>=1.6.0
+
+# Model Persistence
+joblib>=1.2.0
 
 # Data Visualization & EDA
 matplotlib>=3.5.0
