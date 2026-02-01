@@ -3,11 +3,16 @@ from typing import List
 from datetime import datetime
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
+import logging
 
 from database import get_database
 from models import Alert, AlertCreate, AlertResponse, AlertUpdate, AlertsStats, Status, Severity
 from services.detection_service import DetectionService
 from core.firebase_auth import get_current_user, get_admin_user, get_verified_user, UserInfo
+
+# Configure detailed logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
@@ -18,11 +23,18 @@ async def get_all_alerts(
     db=Depends(get_database)
 ):
     """Get all alerts sorted by timestamp (latest first) - Requires authentication"""
+    logger.info(f"🔍 GET /api/alerts called by user: {current_user.email}")
+    
     try:
+        logger.debug("📊 Querying MongoDB for alerts...")
         alerts_cursor = db.alerts.find().sort("timestamp", -1)
         alerts = []
         
+        alert_count = 0
         async for alert in alerts_cursor:
+            alert_count += 1
+            logger.debug(f"📄 Processing alert {alert_count}: {alert['_id']}")
+            
             alert_response = AlertResponse(
                 id=str(alert["_id"]),
                 source_ip=alert["source_ip"],
@@ -35,8 +47,11 @@ async def get_all_alerts(
             )
             alerts.append(alert_response)
         
+        logger.info(f"✅ Successfully fetched {len(alerts)} alerts for {current_user.email}")
         return alerts
+        
     except Exception as e:
+        logger.error(f"❌ Failed to fetch alerts: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch alerts: {str(e)}"

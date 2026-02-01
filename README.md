@@ -11,6 +11,8 @@ A comprehensive, production-ready Campus Network Intrusion Detection System buil
 
 ### Backend (FastAPI)
 - **Firebase Authentication**: Secure authentication using Firebase Auth with role-based access control
+- **Real-time Packet Monitoring**: Live network packet capture and analysis using Scapy
+- **Port Scan Detection**: Automatic detection of TCP SYN-based port scanning attacks
 - **Real-time Alert Management**: Create, view, and resolve security alerts with user tracking
 - **Anomaly Detection**: Built-in scoring system with automatic severity adjustment
 - **Role-Based Security**: Admin and viewer roles with appropriate permissions
@@ -33,19 +35,22 @@ A comprehensive, production-ready Campus Network Intrusion Detection System buil
 
 ### Security Features
 - **Firebase Authentication**: Enterprise-grade authentication with email verification
+- **Real-time Network Monitoring**: Live packet capture and TCP SYN flood detection
+- **Port Scan Detection**: Automatic detection with configurable thresholds
 - **Role-Based Access Control**: Admin and Viewer roles with appropriate permissions
 - **Session Management**: Secure token-based authentication with automatic refresh
 - **Alert Severity Levels**: LOW, MEDIUM, HIGH, CRITICAL with color coding
 - **Anomaly Scoring**: 0.0 to 1.0 scoring with automatic severity escalation
 - **Status Tracking**: OPEN/RESOLVED status management with user attribution
 - **IP Address Tracking**: Source and destination IP monitoring
-- **Attack Type Classification**: Categorized threat detection
+- **Attack Type Classification**: Categorized threat detection including real-time port scans
 
 ## 🏗️ Architecture
 
 ```
 Campus Network IDS
 ├── Backend (FastAPI + MongoDB)
+│   ├── Real-time Packet Monitoring (Scapy)
 │   ├── API Endpoints
 │   ├── Database Models
 │   ├── Detection Service
@@ -99,13 +104,22 @@ ENVIRONMENT=development
 ```
 
 5. **Run the backend**
+
+**Standard Mode** (without packet monitoring):
 ```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+**Full Security Mode** (with real-time packet monitoring):
+```bash
+sudo $(which python) -m uvicorn main:app --host 0.0.0.0 --port 8000
+```
+*Note: Root privileges required for packet capture*
+
 The API will be available at `http://localhost:8000`
 - API Documentation: `http://localhost:8000/docs`
 - Health Check: `http://localhost:8000/health`
+- Monitoring Status: `http://localhost:8000/api/monitoring/status` (auth required)
 
 ### Frontend Setup
 
