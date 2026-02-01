@@ -362,5 +362,3 @@ For support and questions:
 - [ ] Multi-tenant support for multiple campuses
 
 ---
-
-**Built with ❤️ for Campus Network Security**
