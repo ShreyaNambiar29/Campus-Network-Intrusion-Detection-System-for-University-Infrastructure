@@ -205,3 +205,20 @@ figures/
 config.ini
 secrets.json
 credentials.json
+
+# Firebase service account files (SECURITY SENSITIVE)
+campus-network-ids-firebase-adminsdk-*.json
+!campus-network-ids-firebase-adminsdk-TEMPLATE.json
+firebase-adminsdk-*.json
+*firebase-adminsdk*.json
+!*-TEMPLATE.json
+
+# Backend environment files (SECURITY SENSITIVE)
+backend/.env
+backend/.env.local
+backend/.env.production
+backend/.env.development
+
+# Any other service account keys
+service-account*.json
+*service-account*.json
