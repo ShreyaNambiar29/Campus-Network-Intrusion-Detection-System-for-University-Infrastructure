@@ -22,6 +22,7 @@ from app.routes.dashboard_routes import router as dashboard_router
 from app.routes.threat_routes import router as threat_router
 from app.routes.traffic_routes import router as traffic_router
 from app.services.detection_engine import DetectionEngine
+from app.utils.json_store import JsonEventStore
 from app.utils.logger import get_logger
 
 
@@ -36,6 +37,7 @@ class IDSRuntime:
     alert_manager: AlertManager
     websocket_manager: WebSocketManager
     loop: asyncio.AbstractEventLoop
+    json_store: JsonEventStore | None = None
     total_packets_seen: int = 0
 
     def handle_packet(self, packet_data: dict) -> None:
@@ -73,6 +75,8 @@ class IDSRuntime:
                 "target_count": alert.get("target_count", 0),
             }
             self.websocket_manager.broadcast_from_thread(self.loop, alert_payload)
+            if self.json_store is not None:
+                self.json_store.save_alert(alert_payload)
             logger.info("Threat detected", extra={"extra": alert_payload})
         except Exception as exc:
             db.rollback()
@@ -102,6 +106,8 @@ class IDSRuntime:
             )
             db.add(traffic_log)
             db.commit()
+            if self.json_store is not None:
+                self.json_store.save_traffic(packet_data)
         except Exception as exc:
             db.rollback()
             logger.error("Failed to persist traffic log", extra={"extra": {"error": str(exc)}})
@@ -141,6 +147,13 @@ async def on_startup() -> None:
     detection_engine = DetectionEngine(anomaly_detector=anomaly_detector)
 
     loop = asyncio.get_running_loop()
+    json_store = None
+    if settings.persist_json_logs:
+        json_store = JsonEventStore(
+            storage_dir=settings.json_storage_dir,
+            traffic_file=settings.traffic_json_file,
+            alerts_file=settings.alerts_json_file,
+        )
 
     runtime = IDSRuntime(
         packet_sniffer=PacketSniffer(on_packet=lambda packet: runtime.handle_packet(packet), max_buffer=settings.packet_buffer_size),
@@ -149,6 +162,7 @@ async def on_startup() -> None:
         alert_manager=alert_manager,
         websocket_manager=websocket_manager,
         loop=loop,
+        json_store=json_store,
     )
 
     # Replace self-referential lambda target once runtime exists.

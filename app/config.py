@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     packet_buffer_size: int = 500
     feature_window_seconds: int = 15
 
+    persist_json_logs: bool = False
+    json_storage_dir: str = "data/runtime"
+    traffic_json_file: str = "traffic_logs.jsonl"
+    alerts_json_file: str = "alerts.jsonl"
+
     port_scan_threshold: int = 8
     brute_force_threshold: int = 10
     packet_burst_threshold: int = 50

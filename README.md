@@ -144,10 +144,27 @@ SIMULATION_MODE=true
 SNIFFER_INTERFACE=
 PACKET_BUFFER_SIZE=500
 FEATURE_WINDOW_SECONDS=15
+PERSIST_JSON_LOGS=false
+JSON_STORAGE_DIR=data/runtime
+TRAFFIC_JSON_FILE=traffic_logs.jsonl
+ALERTS_JSON_FILE=alerts.jsonl
 PORT_SCAN_THRESHOLD=8
 BRUTE_FORCE_THRESHOLD=10
 PACKET_BURST_THRESHOLD=50
 ```
+
+### Optional JSON File Storage
+
+If you want filesystem-based evidence alongside PostgreSQL, enable:
+
+```env
+PERSIST_JSON_LOGS=true
+```
+
+Then the backend appends newline-delimited JSON (`.jsonl`) files at:
+
+- `data/runtime/traffic_logs.jsonl`
+- `data/runtime/alerts.jsonl`
 
 ## Run Locally
 
